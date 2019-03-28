@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import gif2tty
+
+if __name__ == "__main__":
+    gif2tty.main()
