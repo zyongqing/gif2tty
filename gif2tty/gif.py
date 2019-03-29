@@ -5,7 +5,7 @@ from .tty import write_lines, move_up
 from .weight import DEFAULT_WEIGHTS
 
 
-def extract_frames(file_name, fill_empty=False):
+def _extract_frames(file_name, fill_empty=False):
     im = Image.open(file_name)
     for frame in ImageSequence.Iterator(im):
         if fill_empty:
@@ -31,7 +31,7 @@ def _convert_frame(frame, width, height, weights):
     return ascii_frame
 
 
-def tty_frame(frame, width, height, weights=DEFAULT_WEIGHTS, backspace=True):
+def _tty_frame(frame, width, height, weights=DEFAULT_WEIGHTS, backspace=True):
     ascii_frame = _convert_frame(frame, width, height, weights)
     write_lines(ascii_frame)
     if backspace:
@@ -39,6 +39,6 @@ def tty_frame(frame, width, height, weights=DEFAULT_WEIGHTS, backspace=True):
 
 
 def tty_gif(file_name, width, height, sleep, fill_empty=False):
-    for frame in extract_frames(file_name, fill_empty):
-        tty_frame(frame, width, height)
+    for frame in _extract_frames(file_name, fill_empty):
+        _tty_frame(frame, width, height)
         time.sleep(sleep)

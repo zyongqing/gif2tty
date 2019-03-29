@@ -8,11 +8,12 @@ def cache(key):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             cache_key = key(args)
-            result = _cache.get(cache_key, None)
 
-            if result is None:
-                result = func(*args, **kwargs)
-                _cache[cache_key] = result
+            if cache_key in _cache:
+                return _cache[cache_key]
+
+            result = func(*args, **kwargs)
+            _cache[cache_key] = result
             return result
 
         return wrapper

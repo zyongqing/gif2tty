@@ -13,7 +13,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "gif2tty"
-DESCRIPTION = "show gif to tty"
+DESCRIPTION = "play gif on tty"
 URL = "https://github.com/zyongqing/gif2tty"
 EMAIL = "zyongqing@gmail.com"
 AUTHOR = "zyongqing"
@@ -104,7 +104,7 @@ setup(
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
-    entry_points={"console_scripts": ["gif2tty = gif2tty:main"]},
+    entry_points={"console_scripts": ["gif2tty = gif2tty.__main__:main"]},
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
