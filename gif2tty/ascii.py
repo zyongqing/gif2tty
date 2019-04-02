@@ -1,33 +1,51 @@
-import functools
+from PIL import ImageFont
+from .utils import cache
 
 
-def cache(key):
-    def decorator(func):
-        _cache = {}
+def _char_weight(char):
+    font = ImageFont.load_default()
+    chr_image = font.getmask(char)
+    width, height = font.getsize(char)
 
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            cache_key = key(args)
+    black_pixels = sum(
+        1.0
+        for y in range(height)
+        for x in range(width)
+        if chr_image.getpixel((x, y)) > 0
+    )
+    return black_pixels / (width * height)
 
-            if cache_key in _cache:
-                return _cache[cache_key]
 
-            result = func(*args, **kwargs)
-            _cache[cache_key] = result
-            return result
+def _linear_transform(weights):
+    weights_min = min(weights.keys())
+    weights_max = max(weights.keys())
+    weights_range = weights_max - weights_min
+    linear_weights = ((w / weights_range, c) for w, c in weights.items())
+    return sorted(linear_weights)
 
-        return wrapper
 
-    return decorator
+def _default_weights():
+    weights = {}
+    for i in range(32, 127):
+        char = chr(i)
+        weights[_char_weight(char)] = char
+    return _linear_transform(weights)
+
+
+DEFAULT_WEIGHTS = _default_weights()
 
 
 @cache(key=lambda args: args[0])
-def fitting_pixel(pixel, weights):
-    w = float(pixel) / 255
-    wf = -1.0
-    k = -1
-    for i in range(len(weights)):
-        if abs(weights[i] - w) <= abs(wf - w):
-            wf = weights[i]
-            k = i
-    return chr(k + 32)
+def fitting_ascii(gray_pixel):
+    pixel_weight = float(gray_pixel) / 255
+
+    previous_weight, previous_char = DEFAULT_WEIGHTS[0]
+    for current_weight, current_char in DEFAULT_WEIGHTS:
+        if pixel_weight <= current_weight:
+            previous_euclid_distance = (pixel_weight - previous_weight) ** 2
+            current_euclid_distance = (pixel_weight - current_weight) ** 2
+            if current_euclid_distance >= previous_euclid_distance:
+                return previous_char
+            else:
+                return current_char
+        previous_weight, previous_char = current_weight, current_char
