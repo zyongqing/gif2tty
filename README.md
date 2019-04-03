@@ -1,6 +1,6 @@
 # GIF2TTY: Play GIF on TTY
 
-You can use this package to play gif file on tty device
+You can use this package to play gif file on tty device in grayscale or 8bit color mode
 
 ## Installation
 

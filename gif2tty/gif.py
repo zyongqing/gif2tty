@@ -9,15 +9,15 @@ def _fill_empty(frame):
     return canvas
 
 
-def extract_frames(file_name, width, height, fill_empty=False):
+def extract_frames(file_name, width, height, fill=False, **kwargs):
     image = Image.open(file_name)
     for frame in ImageSequence.Iterator(image):
-        if fill_empty:
-            frame = _fill_empty()
+        if fill:
+            frame = _fill_empty(image)
         yield frame.resize((width, height), Image.BICUBIC)
 
 
-def gif_tty(file_name, width, height, sleep=0.02, fill_empty=False):
-    for frame in extract_frames(file_name, width, height, fill_empty):
-        output_frame(frame)
+def gif_tty(file_name, width, height, sleep=0.02, **kwargs):
+    for frame in extract_frames(file_name, width, height, **kwargs):
+        output_frame(frame, **kwargs)
         time.sleep(sleep)
